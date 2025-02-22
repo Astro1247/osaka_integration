@@ -1,0 +1,16 @@
+{
+  "domain": "osaka_ac",
+  "name": "Osaka AC",
+  "codeowners": [
+    "@Astro1247"
+  ],
+  "config_flow": false,
+  "documentation": "https://github.com/Astro1247/osaka_integration",
+  "iot_class": "assumed_state",
+  "issue_tracker": "https://github.com/Astro1247/osaka_integration/issues",
+  "requirements": [
+    "mqtt"
+  ],
+  "version": "v1.0.0",
+  "integration_type": "hub"
+}
