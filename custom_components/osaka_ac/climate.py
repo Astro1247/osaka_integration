@@ -97,6 +97,8 @@ CONF_SET_SWING_MODE_ACTION = "set_swing_mode"
 
 CONF_CLIMATES = "climates"
 
+CONF_MQTT_TOPIC_NAME = "mqtt_topic_name"
+
 DEFAULT_NAME = "Osaka AC"
 DEFAULT_TEMP = 25
 DEFAULT_PRECISION = 1.0
@@ -161,6 +163,7 @@ PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
         ),
         vol.Optional(CONF_TEMP_STEP, default=DEFAULT_PRECISION): vol.Coerce(float),
         vol.Optional(CONF_UNIQUE_ID): cv.string,
+        vol.Optional(CONF_MQTT_TOPIC_NAME, default="zigbee2mqtt/Moes UFO-R11/set/ir_code_to_send"): cv.string,
     }
 )
 
@@ -244,6 +247,8 @@ class OsakaACEntity(TemplateEntity, ClimateEntity, RestoreEntity):
 
         self._turbo_mode = False
         self._night_mode = False
+
+        self._mqtt_topic_name = config.get(CONF_MQTT_TOPIC_NAME)
 
     @property
     def extra_state_attributes(self):
