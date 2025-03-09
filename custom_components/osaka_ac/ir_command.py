@@ -394,12 +394,12 @@ def generate_ir_command(hvac_mode, target_temp, fan_mode, swing_mode, power_on=T
         'fan_only': '00000111'
     }
     allowed_modes = hvac_modes.keys()
-    if hvac_mode not in allowed_modes:
-        raise ValueError(f"hvac_mode must be one of {allowed_modes}, got {hvac_mode}")
-    signal = base_template[:48] + hvac_modes[hvac_mode] + base_template[56:]
 
     if hvac_mode == 'auto':
         hvac_mode = 'feel'
+    if hvac_mode not in allowed_modes:
+        raise ValueError(f"hvac_mode must be one of {allowed_modes}, got {hvac_mode}")
+    signal = base_template[:48] + hvac_modes[hvac_mode] + base_template[56:]
 
     if hvac_mode in ('heat', 'cool'):
         # SET TEMPERATURE
