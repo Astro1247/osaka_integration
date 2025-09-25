@@ -58,6 +58,7 @@ from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.script import Script
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, PLATFORMS
 
@@ -105,7 +106,7 @@ DEFAULT_PRECISION = 1.0
 
 PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
     {
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.template,
         vol.Optional(CONF_AVAILABILITY_TEMPLATE): cv.template,
         vol.Optional(CONF_ICON_TEMPLATE): cv.template,
         vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
@@ -168,9 +169,12 @@ PLATFORM_SCHEMA = cv.PLATFORM_SCHEMA.extend(
 )
 
 async def async_setup_platform(
-    hass: HomeAssistant, config: ConfigType, async_add_entities, discovery_info=None
-) -> bool:
-    #hass.states.async_set('osaka_ac.temperature', 25)
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+    discovery_info=None,
+) -> None:
+    """Set up the Osaka AC platform."""
     async_add_entities([OsakaACEntity(hass, config)])
 
     return True
@@ -186,15 +190,10 @@ class OsakaACEntity(TemplateEntity, ClimateEntity, RestoreEntity):
         """Initialize the climate device."""
         super().__init__(
             hass,
-            availability_template=config.get(CONF_AVAILABILITY_TEMPLATE),
-            icon_template=config.get(CONF_ICON_TEMPLATE),
-            entity_picture_template=config.get(CONF_ENTITY_PICTURE_TEMPLATE),
-            unique_id=config.get(CONF_UNIQUE_ID, None),
+            unique_id=config.get(CONF_UNIQUE_ID),
+            config=config
         )
         self.hass = hass
-        self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, config[CONF_NAME], hass=hass
-        )
 
         self._attr_supported_features: ClimateEntityFeature = ClimateEntityFeature(0)
         self._attr_supported_features |= ClimateEntityFeature.TURN_ON
@@ -206,7 +205,6 @@ class OsakaACEntity(TemplateEntity, ClimateEntity, RestoreEntity):
 
         self._attr_temperature_unit = hass.config.units.temperature_unit
 
-        self._name = CONF_NAME
         self._attr_hvac_mode = HVACMode.OFF
         self._attr_target_temperature = 27
         self._attr_fan_mode = "auto"
